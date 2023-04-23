@@ -1,0 +1,10 @@
+{
+    "Ad" : "Android application",
+    "Web": "Web application",
+    "Server": "Server application",
+    "Db": "Database application",
+    "Ds": "Datascience",
+    "Ml": "Machine Learning",
+    "Dl": "Deep Learning",
+    "IOS": "IOS application"
+}
