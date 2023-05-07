@@ -1,20 +1,18 @@
 import React from 'react';
 import { Button } from '@mui/material';
-import { useFormikContext } from 'formik';
-
+import SendIcon from '@mui/icons-material/Send';
 
 const ButtonWrapper = ({
     children,
     ...other
 }) => {
 
-    const { submitForm } = useFormikContext();
-
     const handleSubmit = () => {
-        submitForm();
+
     }
 
     const config = {
+        size: 'large',
         color: 'secondary',
         variant: 'outlined',
         fullWidth: true,

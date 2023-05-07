@@ -1,0 +1,215 @@
+import React from "react";
+import TextfieldWrapper from "../../FormsUI/Textfield";
+import { Box, Typography, Checkbox, Grid, Button } from "@mui/material";
+import mockPlatform from "../../../data/mockPlatform.json";
+import { useState } from "react";
+import { useTheme } from "@mui/material";
+import { tokens } from "../../../theme";
+import * as Yup from 'yup';
+import { Formik, Form, replace } from 'formik';
+import SelectWrapper from "../../FormsUI/Select";
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import Avatar from '@mui/material/Avatar';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Link from '@mui/material/Link';
+import CssBaseline from '@mui/material/CssBaseline';
+import Container from '@mui/material/Container';
+import ButtonWrapper from "../../FormsUI/Button";
+import { UserAuth } from "../../Context/AuthContext";
+import { useNavigate } from 'react-router-dom'
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../../firebaseConfig";
+import { UserData } from "../../Context/UserContext";
+import { serverTimestamp } from "firebase/firestore";
+import { v4 as uuidv4 } from 'uuid';
+import { collection, setDoc, doc } from "firebase/firestore";
+import { db} from "../../firebaseConfig";
+
+
+const initValues = {
+    id: '',
+    name: '',
+    lastName: '',
+    email: '',
+    password: '',
+    regDate: serverTimestamp(),
+    changeDate: serverTimestamp(),
+    wallet: '',
+    mainPlatform: '',
+    likes: 0,
+    dislikes: 0,
+    aboutMe: '',
+    countCompletedProjects: 0
+}
+
+const validationForm = Yup.object().shape({
+    name: Yup.string().required("Required"),
+    lastName: Yup.string().required("Required"),
+    email: Yup.string().email().required("email is required"),
+    mainPlatform: Yup.string().required("Required"),
+    password: Yup.string().required("Password is required"),
+});
+
+const RegisterForm = () => {
+
+
+    const [values, setValues] = useState(initValues)
+    const [error, SetError] = useState('')
+    const theme = useTheme();
+    const colors = tokens(theme.palette.mode);
+    const navigate = useNavigate();
+
+    const { createUser, user } = UserAuth()
+    const colRef = collection(db, 'users')
+
+    return (
+        <Formik
+            initialValues={{ ...initValues }}
+            validationSchema={validationForm}
+            onSubmit={
+                async (values) => {
+                    SetError('')
+                    try {
+                        await createUser(values.email, values.password)
+                            .then(() => {
+                                const userData = {
+                                    id: auth.currentUser.uid,
+                                    name: values.name,
+                                    lastName: values.lastName,
+                                    email: values.email,
+                                    regDate: serverTimestamp(),
+                                    changeDate: serverTimestamp(),
+                                    wallet: values.wallet,
+                                    mainPlatform: values.mainPlatform,
+                                    likes: values.likes,
+                                    dislikes: values.dislikes,
+                                    aboutMe: values.aboutMe,
+                                    countCompletedProjects: values.countCompletedProjects
+                                }
+                                console.log('im here')
+                                const userRef = doc(colRef, userData.id)
+                                 setDoc(userRef, userData)
+                                console.log('completed')
+
+                            })
+                        navigate('/authed/dashboard', { replace: true })
+                    } catch (e) {
+                        SetError(e.message)
+                        console.log(e.message)
+                    }
+                }
+
+            }>
+            <Form>
+                <Container component="main" maxWidth="xs" >
+                    <CssBaseline />
+                    <Box
+                        sx={{
+                            marginTop: 2,
+                            pl: 3,
+                            pr: 3,
+                            pt: 1,
+                            pb: 1,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            bgcolor: colors.primary[400],
+                            borderRadius: '16px',
+                            border: '1px solid black'
+                        }}
+                    >
+                        <Avatar sx={{ m: 1, bgcolor: colors.greenAccent[400] }}>
+                            <LockOutlinedIcon />
+                        </Avatar>
+                        <Typography component="h1" variant="h5">
+                            Sign up
+                        </Typography>
+                        <Box sx={{ mt: 3 }}>
+                            <Grid container spacing={3}>
+                                <Grid item xs={12} sm={6}>
+                                    <TextfieldWrapper
+                                        name='name'
+                                        label='Input your name'
+                                        color='secondary'>
+
+                                    </TextfieldWrapper>
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <TextfieldWrapper
+                                        name='lastName'
+                                        label='Input your surname'
+                                        color='secondary'>
+                                    </TextfieldWrapper>
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <SelectWrapper
+                                        name="mainPlatform"
+                                        label="Choose your main platform"
+                                        options={mockPlatform}
+                                        color="secondary"
+
+                                    />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <TextfieldWrapper
+                                        sx={{ mt: 1 }}
+                                        name='email'
+                                        label='Input your email address'
+                                        color='secondary'
+                                    >
+
+                                    </TextfieldWrapper>
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <TextfieldWrapper
+                                        sx={{ mt: 1 }}
+                                        name="password"
+                                        label="Input password"
+                                        color='secondary'
+                                        type='password'
+
+                                    >
+                                    </TextfieldWrapper>
+                                </Grid>
+                                <Grid item xs={12} mb={1}>
+                                    <FormControlLabel
+                                        control={<Checkbox value="allowExtraEmails" color="secondary" />}
+                                        label="I accept privacy policy"
+                                    />
+                                </Grid>
+                            </Grid>
+                            <Button
+                                fullWidth
+                                variant="contained"
+                                color="secondary"
+                                type="submit"
+                            >
+                                <Typography color={colors.greenAccent[400]} variant="h5">
+                                    Sign up
+                                </Typography>
+                            </Button>
+                            <Grid container justifyContent="center" mt={1}>
+                                <Grid item>
+                                    <Typography variant='errorMsg' align="center" color={colors.redAccent[400]} visibility='hidden'>
+                                        This email is already registered
+                                    </Typography>
+                                </Grid>
+                            </Grid>
+                            <Grid container justifyContent="flex-end" mt={1}>
+                                <Grid item>
+                                    <Link href="#" variant="body2" color='secondary'>
+                                        Already have an account? Sign in
+                                    </Link>
+                                </Grid>
+                            </Grid>
+                        </Box>
+                    </Box>
+                </Container>
+            </Form>
+
+        </Formik>
+    )
+
+}
+
+export default RegisterForm

@@ -29,15 +29,6 @@ const SelectWrapper = ({
       configSelect.helperText = meta.error;
     }
 
-    const mapping = () => {
-      Object.keys(options).map((item, pos) => {
-        return (
-          <MenuItem key={pos} value={item}>
-            {options[item]}
-          </MenuItem>
-        )
-      })
-    }
 
     return (
       <TextField {...configSelect}>

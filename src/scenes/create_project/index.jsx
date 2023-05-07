@@ -12,46 +12,40 @@ import mockPlatform from "../../data/mockPlatform.json";
 import currency from "../../data/currency.json";
 import DateTimePicker from "../../components/FormsUI/DateTimePicker";
 import Button from "../../components/FormsUI/Button";
-
-
-const today = () => {
-    var today = new Date();
-    var dd = today.getDate();
-    var mm = today.getUTCMonth() + 1
-    mm = mm.toString();
-    if (mm.toString().length < 2) {
-        mm = "0"+mm
-    }
-    var yy = today.getFullYear();
-    today = yy + "-" + mm + "-" + dd;
-    return today;
-}
+import SendIcon from '@mui/icons-material/Send';
+import { serverTimestamp } from "firebase/firestore";
+import { v4 as uuidv4 } from 'uuid';
+import { collection, setDoc, doc } from "firebase/firestore";
+import { db } from "../../components/firebaseConfig";
+import { useNavigate } from "react-router-dom";
+import { auth } from "../../components/firebaseConfig";
+import { UserAuth } from "../../components/Context/AuthContext";
 
 const initValues = {
-    id: 0,
-    author: "This user",
+    projectId: uuidv4(),
+    authorId: "",
+    authorName: "",
     shortName: "",
     description:"",
     platform:"",
     peopleMin: "",
     peopleMax: "",
-    startDate: today(),
+    startDate: serverTimestamp(),
     endDate: "",
     currency:"",
     cost: "",
+    status: "Accepting Applications",
+    statusId: 0
 };
 
 const validationForm = Yup.object().shape({
-    id: Yup.number(),
-    author: "",
     shortName: Yup.string()
         .required("Required"),
     description: Yup.string()
         .required("Description is required"),
-    platform: '',
+    platform: Yup.string().required("Platform is required"),
     peopleMin: Yup.number().positive().integer().required("Minimum number of people"),
     peopleMax: Yup.number().positive().integer().required("Maximum number of people"),
-    startDate: "",
     endDate: Yup.date().min(new Date()).required("End date is required"),
     currency: Yup.string().required("Currency"),
     cost: Yup.number().required("Cost of project"),
@@ -60,8 +54,13 @@ const validationForm = Yup.object().shape({
 function CreateProject() {
     
     const [values, setValues] = useState(initValues)
+    const [error, SetError] = useState('')
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
+    const colRef = collection(db, 'projects')
+    const navigate = useNavigate();
+    const { userData } = UserAuth()
+
 
     return(
         <Box m = "14px">
@@ -74,8 +73,20 @@ function CreateProject() {
             <Formik 
             initialValues= {{...initValues}}
             validationSchema={validationForm}
-            onSubmit={values => {
-                console.log(values);
+            onSubmit={async (values) => {
+                SetError('')
+                try {
+                    values.authorId = auth.currentUser.uid
+                    values.authorName = userData.name + ' ' + userData.lastName
+                    console.log('im here')
+                    const userRef = doc(colRef, values.projectId)
+                    await setDoc(userRef, values)
+                    console.log('completed')
+                    navigate('/authed/dashboard')
+                } catch (e) {
+                    SetError(e.message)
+                    console.log(e.message)
+                }
             }}>
                 <Form>
 
@@ -135,7 +146,7 @@ function CreateProject() {
                         <Grid item xs={4}>
                         <Select
                             name="platform"
-                            label="Country"
+                            label="Choose platform"
                             options={mockPlatform}
                             color = "secondary"
                         />
@@ -168,7 +179,7 @@ function CreateProject() {
                         <Grid item xs={4}>
                           <Button
                             color = "primary"
-                            
+                            endIcon={<SendIcon />}
                             >
                             Create project
                           </Button>

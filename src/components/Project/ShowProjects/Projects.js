@@ -1,5 +1,4 @@
 import * as React from 'react';
-import PropTypes from 'prop-types';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
@@ -8,33 +7,11 @@ import ProjectCard from './Card';
 import { mockDataProjects } from "../../../data/mockProject";
 import { useTheme } from "@mui/material";
 import { tokens } from "../../../theme";
+import TabPanel from '../../TabPanel';
+import { collection, onSnapshot, query } from "firebase/firestore";
+import { db} from '../../firebaseConfig'
+import { useState, useEffect } from 'react';
 
-
-function TabPanel(props) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      {...other}
-    >
-      {value === index && (
-        <Box sx={{ p: 3, flexDirection: 'column'}}>
-          {children}
-        </Box>
-      )}
-    </div>
-  );
-}
-
-TabPanel.propTypes = {
-  children: PropTypes.node,
-  index: PropTypes.number.isRequired,
-  value: PropTypes.number.isRequired,
-};
 
 function a11yProps(index) {
   return {
@@ -52,16 +29,38 @@ export default function ProjectTabs() {
 
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const [data, setData] = useState([])
+  const [dataId, setDataId] = useState([])
+
+  // read projects
+  useEffect(() => {
+    const projects = query(collection(db, 'projects'))
+    const unsubscribe = onSnapshot(projects, (querySnapshot) => {
+      const projectData = [];
+      const ids = [];
+      querySnapshot.forEach((doc) => {
+        projectData.push(doc.data())
+        ids.push(doc.id)
+      });
+      setDataId(ids)
+      console.log(projectData)
+      setData(projectData)
+    })
+    return () => {
+      unsubscribe();
+    };
+  }, [])
+
 
   return (
     <Box sx={{ width: '100%' }}>
       <Tabs value={value} onChange={handleChange} aria-label="basic tabs example" textColor="secondary" centered indicatorColor="secondary">
-        <Tab label="Item One" {...a11yProps(0)} style={{ minWidth: '25%' }} />
-        <Tab label="Item Two" {...a11yProps(1)} style={{ minWidth: '25%' }} />
+        <Tab label="All projects" {...a11yProps(0)} style={{ minWidth: '25%' }} />
+        <Tab label="My favorite" {...a11yProps(1)} style={{ minWidth: '25%' }} />
       </Tabs>
       <Box>
         <TabPanel value={value} index={0} >
-          <ProjectCard style={{ backgroundColor: colors.primary[400] }} newProjects={mockDataProjects}>
+          <ProjectCard style={{ backgroundColor: colors.primary[400] }} newProjects={data} projectIds={dataId}>
 
           </ProjectCard>
         </TabPanel>

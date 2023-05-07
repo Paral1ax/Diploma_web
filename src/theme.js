@@ -63,10 +63,19 @@ export const tokens = (mode) => ({
           800: "#2a2d64",
           900: "#151632",
         },
+        primary2: {
+          400: "#0f141f"
+        },
+        white_black: {
+          400: "#ffffff"
+        },
       }
     : {
         black_white: {
           400: "#ffffff"
+        },
+        white_black: {
+          400: "#49423d"
         },
         grey: {
           100: "#141414",
@@ -123,6 +132,9 @@ export const tokens = (mode) => ({
           800: "#c3c6fd",
           900: "#e1e2fe",
         },
+        primary2: {
+          400: "#dbdbdb"
+        }
       }),
 });
 
@@ -144,6 +156,11 @@ export const themeSettings = (mode) => {
             third: {
               main: '#F59E6A'
             },
+
+            red: {
+              main: '#ff0000'
+            },
+
             neutral: {
               dark: colors.grey[700],
               main: colors.grey[500],
@@ -165,6 +182,11 @@ export const themeSettings = (mode) => {
             secondary: {
               main: colors.greenAccent[500],
             },
+
+            red: {
+              main: '#ff0000'
+            },
+
             neutral: {
               dark: colors.grey[700],
               main: colors.grey[500],

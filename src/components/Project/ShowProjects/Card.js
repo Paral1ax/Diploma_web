@@ -23,8 +23,10 @@ import InputAdornment from '@mui/material/InputAdornment';
 import PeopleIcon from '@mui/icons-material/People';
 import CallMadeIcon from '@mui/icons-material/CallMade';
 
+
 const ProjectCard = ({
     newProjects,
+    projectIds,
     ...other
 }) => {
 
@@ -40,6 +42,9 @@ const ProjectCard = ({
     const handleShowProject = (i) => {
 
     }
+    const displayTime = (time) => {
+        return (new Date(time * 1000).toLocaleDateString())
+      }
 
     const ExpandMore = styled((props) => {
         const { expand, ...other } = props;
@@ -55,7 +60,7 @@ const ProjectCard = ({
     return (
         <Box>
             {newProjects.map((item, i) => (
-                <Card {...other} key={item.id} sx={{marginBottom:'15px', minWidth: '100%', borderRadius: '16px', border: '1px solid black' }}>
+                <Card {...other} key={projectIds[i]} sx={{marginBottom:'15px', minWidth: '100%', borderRadius: '16px', border: '1px solid black' }}>
 
                     <CardContent>
                         <Box display='flex'>
@@ -77,7 +82,7 @@ const ProjectCard = ({
                                 </Box>
                                 <Box>
                                     <Typography>
-                                        {item.startDate}
+                                        {displayTime(item.startDate.seconds)}
                                     </Typography>
                                 </Box>
 

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ProSidebar, Menu, MenuItem } from "react-pro-sidebar";
 import { Box, IconButton, Typography, useTheme } from "@mui/material";
 import { Link } from "react-router-dom";
@@ -10,6 +10,10 @@ import CalendarTodayOutlinedIcon from "@mui/icons-material/CalendarTodayOutlined
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import WorkOutlineIcon from '@mui/icons-material/WorkOutline';
 import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined';
+import { getDoc, where } from "firebase/firestore";
+import { db, auth } from "../../components/firebaseConfig";
+import { doc } from "firebase/firestore";
+import { UserAuth } from "../../components/Context/AuthContext";
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
   const theme = useTheme();
@@ -30,11 +34,31 @@ const Item = ({ title, to, icon, selected, setSelected }) => {
 };
 
 const Sidebar = () => {
+  const link = '/authed'
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [selected, setSelected] = useState("Dashboard");
+  const [userData, setUserData] = useState({})
+  const { user } = UserAuth()
 
+
+  useEffect(() => {
+    const getUserById = async () => {
+      console.log("sidebar curid = " + user.uid)
+      const userRef = doc(db, 'users', user.uid)
+      const userSnap = await getDoc(userRef)
+
+      if (userSnap.exists()) {
+        setUserData(userSnap.data())
+      }
+      else console.log("User not found")
+    }
+    return () => {
+      getUserById()
+    }
+  }, [])
+  
   return (
     <Box
       sx={{
@@ -101,7 +125,7 @@ const Sidebar = () => {
                   fontWeight="bold"
                   sx={{ m: "10px 0 0 0" }}
                 >
-                  Ilya Gorbach
+                  {userData.name + ' ' + userData.lastName}
                 </Typography>
                 <Typography variant="h5" color={colors.greenAccent[500]}>
                   Developer
@@ -113,7 +137,7 @@ const Sidebar = () => {
           <Box paddingLeft={isCollapsed ? undefined : "10%"}>
             <Item
               title="Dashboard"
-              to="/"
+              to={link + "/dashboard"}
               icon={<HomeOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
@@ -127,15 +151,15 @@ const Sidebar = () => {
             </Typography>
             <Item
               title="Projects"
-              to="/projects"
-              icon={<WorkOutlineIcon/>}
+              to={link + "/projects"}
+              icon={<WorkOutlineIcon />}
               selected={selected}
               setSelected={setSelected}
             />
             <Item
               title="Create project"
-              to="/create"
-              icon={<AddBoxOutlinedIcon/>}
+              to={link + "/create"}
+              icon={<AddBoxOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
@@ -148,7 +172,7 @@ const Sidebar = () => {
             </Typography>
             <Item
               title="Manage Team"
-              to="/team"
+              to={link + "/team"}
               icon={<PeopleOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
@@ -156,7 +180,7 @@ const Sidebar = () => {
 
             <Item
               title="Calendar"
-              to="/calendar"
+              to={link + "/calendar"}
               icon={<CalendarTodayOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
