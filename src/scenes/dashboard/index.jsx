@@ -4,7 +4,7 @@ import Header from "../../components/Header";
 import Card from "../../components/Project/Dashboard/Card";
 import { useEffect, useState } from "react";
 import { collection, onSnapshot, query } from "firebase/firestore";
-import { db} from '../../components/firebaseConfig'
+import { db } from '../../components/firebaseConfig'
 
 const Dashboard = () => {
   const theme = useTheme();
@@ -16,21 +16,21 @@ const Dashboard = () => {
   // read projects
   useEffect(() => {
     const projects = query(collection(db, 'projects'))
-    const unsubscribe = onSnapshot(projects, (querySnapshot) =>{
+    const unsubscribe = onSnapshot(projects, (querySnapshot) => {
       const projectData = [];
       const ids = [];
-      querySnapshot.forEach((doc) =>    {
+      querySnapshot.forEach((doc) => {
         projectData.push(doc.data())
         ids.push(doc.id)
       });
       setDataId(ids)
-      console.log(projectData)
+      console.log("Данные о проектк: " + projectData)
       setData(projectData)
-  }) 
-  return () => {
-    unsubscribe();
-  };
-},[])
+    })
+    return () => {
+      unsubscribe();
+    };
+  }, [])
 
   return (
     <Box m="20px">
@@ -44,7 +44,7 @@ const Dashboard = () => {
           Lets start journey
         </Typography>
       </Box>
-      <Box display='block' sx = {{borderRadius: '16px',  border: '1px solid black'}} justifyContent="start" alignItems="center" p={2} style={{ backgroundColor: colors.primary[400] }}>
+      <Box display='block' width={"80%"} sx={{ borderRadius: '16px', border: '1px solid black' }} justifyContent="start" alignItems="center" p={2} style={{ backgroundColor: colors.primary[400] }}>
         <Typography variant="h4" pt={2}>
           1. Connect your profile to Phantom wallet.
         </Typography>
@@ -57,7 +57,7 @@ const Dashboard = () => {
         <Typography variant="h4" pt={2}>
           4. If you want to post a new project, click on the "Create project" tab.
         </Typography>
-        <Typography variant="h4" pt={2} pb ={2}>
+        <Typography variant="h4" pt={2} pb={2}>
           5. Also, sometimes check the "Arbitration" tab, perhaps it is you who will decide the fate of someones project.
         </Typography>
       </Box>
@@ -67,6 +67,7 @@ const Dashboard = () => {
         </Typography>
       </Box>
       <Box
+        sx={{ overflowX: 'scroll'}}
         display='flex' justifyContent="start" alignItems="center"
       >
         <Card style={{ backgroundColor: colors.primary[400] }} newProjects={data} projectsId={dataId}>

@@ -23,7 +23,7 @@ import { UserData } from "../../Context/UserContext";
 import { serverTimestamp } from "firebase/firestore";
 import { v4 as uuidv4 } from 'uuid';
 import { collection, setDoc, doc } from "firebase/firestore";
-import { db} from "../../firebaseConfig";
+import { db } from "../../firebaseConfig";
 
 
 const initValues = {
@@ -39,7 +39,8 @@ const initValues = {
     likes: 0,
     dislikes: 0,
     aboutMe: '',
-    countCompletedProjects: 0
+    countCompletedProjects: 0,
+    chats: []
 }
 
 const validationForm = Yup.object().shape({
@@ -54,13 +55,14 @@ const RegisterForm = () => {
 
 
     const [values, setValues] = useState(initValues)
-    const [error, SetError] = useState('')
+    const [error, SetError] = useState(false)
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
     const navigate = useNavigate();
 
     const { createUser, user } = UserAuth()
-    const colRef = collection(db, 'users')
+    const userColRef = collection(db, 'users')
+    const teamColRef = collection(db, 'teams')
 
     return (
         <Formik
@@ -71,7 +73,7 @@ const RegisterForm = () => {
                     SetError('')
                     try {
                         await createUser(values.email, values.password)
-                            .then(() => {
+                            .then(async () => {
                                 const userData = {
                                     id: auth.currentUser.uid,
                                     name: values.name,
@@ -84,17 +86,44 @@ const RegisterForm = () => {
                                     likes: values.likes,
                                     dislikes: values.dislikes,
                                     aboutMe: values.aboutMe,
-                                    countCompletedProjects: values.countCompletedProjects
+                                    countCompletedProjects: values.countCompletedProjects,
+                                    chats: values.chats,
                                 }
-                                console.log('im here')
-                                const userRef = doc(colRef, userData.id)
-                                 setDoc(userRef, userData)
-                                console.log('completed')
+                                console.log('Create new user')
+                                const userRef = doc(userColRef, userData.id)
+                                await setDoc(userRef, userData)
+                                console.log('Creating completed')
 
+                            }).then(async () => {
+                                const team = {
+                                    authorId: auth.currentUser.uid,
+                                    teamId: uuidv4(),
+                                    formationDate: serverTimestamp(),
+                                    changeDate: serverTimestamp(),
+                                    teamMultiWallet: "",
+                                    teamName: "My Team 1",
+                                    members: [
+                                        {
+                                            memberId: 1,
+                                            name: values.name,
+                                            lastName: values.lastName,
+                                            email: values.email,
+                                            likes: values.likes,
+                                            dislikes: values.dislikes,
+                                            mainPlatform: values.mainPlatform,
+                                            countCompletedProjects: values.countCompletedProjects,
+                                            aboutMe: values.aboutMe
+                                        }
+                                    ]
+                                }
+                                console.log('Create new team')
+                                const teamRef = doc(teamColRef, team.teamId)
+                                await setDoc(teamRef, team)
+                                console.log('Creating completed')
                             })
                         navigate('/authed/dashboard', { replace: true })
                     } catch (e) {
-                        SetError(e.message)
+                        SetError(true)
                         console.log(e.message)
                     }
                 }
@@ -190,14 +219,14 @@ const RegisterForm = () => {
                             </Button>
                             <Grid container justifyContent="center" mt={1}>
                                 <Grid item>
-                                    <Typography variant='errorMsg' align="center" color={colors.redAccent[400]} visibility='hidden'>
-                                        This email is already registered
-                                    </Typography>
+                                    {error ? (<Typography color={colors.redAccent[400]}>
+                                        Такой email уже зарегистрирован
+                                    </Typography>) : (<></>)}
                                 </Grid>
                             </Grid>
                             <Grid container justifyContent="flex-end" mt={1}>
                                 <Grid item>
-                                    <Link href="#" variant="body2" color='secondary'>
+                                    <Link href="/" variant="body2" color='secondary'>
                                         Already have an account? Sign in
                                     </Link>
                                 </Grid>

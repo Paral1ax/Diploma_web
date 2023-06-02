@@ -13,28 +13,26 @@ import { UserAuth } from "../../Context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 
-const AuthorizeForm = () => {
+const AboutMeForm = () => {
 
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
     const link = '/authed'
 
-    const [userEmail, SetEmail] = useState('');
-    const [userPassword, SetPassword] = useState('');
-    const [error, SetError] = useState(false);
+    const [error, SetError] = useState('');
 
     const { signIn } = UserAuth()
     const navigate = useNavigate();
     const handleSubmit = async (e) => {
         e.preventDefault();
+        SetError('');
         try {
             await signIn(userEmail, userPassword)
-                
             console.log('login success')
-            navigate("/authed/dashboard")
-            
-        } catch(e) {
-            SetError(true)
+
+            navigate("/authed/dashboard");
+        } catch (e) {
+            SetError(e.message)
             console.log(e.message)
         }
     };
@@ -64,41 +62,48 @@ const AuthorizeForm = () => {
                     Sign in
                 </Typography>
                 <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-                    <TextField
-                        margin="normal"
-                        required
-                        fullWidth
-                        id="email"
-                        label="Email Address"
-                        name="email"
-                        autoComplete="email"
-                        color="secondary"
-                        autoFocus
-                        value={userEmail}
-                        onChange={(e) => SetEmail(e.target.value)}
-                    />
-                    <TextField
-                        margin="normal"
-                        required
-                        fullWidth
-                        name="password"
-                        label="Password"
-                        type="password"
-                        color="secondary"
-                        id="password"
-                        autoComplete="current-password"
-                        value={userPassword}
-                        onChange={(e) => SetPassword(e.target.value)}
-                    />
+                    <Grid container spacing={3}>
+                        <Grid item xs={12} sm={6}>
+                            <TextfieldWrapper
+                                name='name'
+                                label='Input your name'
+                                color='secondary'>
 
+                            </TextfieldWrapper>
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <TextfieldWrapper
+                                name='lastName'
+                                label='Input your surname'
+                                color='secondary'>
+                            </TextfieldWrapper>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <SelectWrapper
+                                name="mainPlatform"
+                                label="Choose your main platform"
+                                options={mockPlatform}
+                                color="secondary"
 
-                    <FormControlLabel
-                        control={<Checkbox value="remember" color="secondary" />}
-                        label="Remember me"
-                    />
-                    {error ? (<Typography color={colors.redAccent[400]}>
-                        Неверное имя пользователя или пароль
-                    </Typography>) : (<></>)}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextfieldWrapper
+                                sx={{ mt: 1 }}
+                                name='Describe yourself'
+                                label='Input your email address'
+                                color='secondary'
+                            >
+
+                            </TextfieldWrapper>
+                        </Grid>
+                        <Grid item xs={12} mb={1}>
+                            <FormControlLabel
+                                control={<Checkbox value="allowExtraEmails" color="secondary" />}
+                                label="I accept privacy policy"
+                            />
+                        </Grid>
+                    </Grid>
                     <Button
                         type="submit"
                         fullWidth
@@ -110,18 +115,6 @@ const AuthorizeForm = () => {
                             Sign in
                         </Typography>
                     </Button>
-                    <Grid container>
-                        <Grid item xs>
-                            <Link href="#" variant="body2" color={colors.greenAccent[400]}>
-                                Forgot password?
-                            </Link>
-                        </Grid>
-                        <Grid item>
-                            <Link href="/register" variant="body2" color={colors.greenAccent[400]}>
-                                {"Don't have an account? Sign Up"}
-                            </Link>
-                        </Grid>
-                    </Grid>
                 </Box>
             </Box>
         </Container >
@@ -129,4 +122,4 @@ const AuthorizeForm = () => {
 
 }
 
-export default AuthorizeForm
+export default AboutMeForm

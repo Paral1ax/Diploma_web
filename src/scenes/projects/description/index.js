@@ -27,6 +27,7 @@ const ShowDescription = () => {
             getProjectById()
         }
     }, [])
+    
     return (
         <>
         {ProjectDescription && console.log("author id " + projectDescription.authorId) (

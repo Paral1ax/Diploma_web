@@ -33,7 +33,6 @@ const UserCard = ({
         return <IconButton {...other} />;
     })(({ theme, expand }) => ({
         transform: !expand ? 'rotate(0deg)' : 'rotate(180deg)',
-        marginLeft: 'auto',
         transition: theme.transitions.create('transform', {
             duration: theme.transitions.duration.shortest,
         }),
@@ -41,14 +40,14 @@ const UserCard = ({
 
     return (
         
-        <Box display='flex' p={1}>
+        <Box  display ="flex" sx={{ overflowX: 'scroll', m: 2}}>
             {userData.map((userInfo, i) => (
-            <Card key={userInfo.id} sx={{
-                maxWidth: 400,
+            <Card key={userInfo.memberId} sx={{
                 borderRadius: '16px',
+                minWidth: '25%',
                 border: '1px solid black',
                 backgroundColor: colors.primary2[400],
-                mr: 1
+                m: 2
             }}>
                 <CardHeader
                     avatar={
@@ -61,7 +60,7 @@ const UserCard = ({
                             <MoreVertIcon />
                         </IconButton>
                     }
-                    title={userInfo.name + ' ' + userInfo.surname}
+                    title={userInfo.name + ' ' + userInfo.lastName}
                     subheader={
                         <LikeDislike likes={userInfo.likes} dislikes={userInfo.dislikes}>
 
@@ -70,7 +69,7 @@ const UserCard = ({
                 <CardContent>
                     <TextfieldWrapper
                         label="Main platform"
-                        sx = {{ width : '45%'}}
+                        sx = {{ width : '65%'}}
                         defaultValue={userInfo.mainPlatform}
                         InputProps={{
                             readOnly: true,
@@ -79,7 +78,7 @@ const UserCard = ({
                     />
 
                     <TextfieldWrapper
-                        sx = {{width : '45%', ml: 2}}
+                        sx = {{width : '20%', ml: 2}}
                         label="Number of completed projects"
                         defaultValue={userInfo.countCompletedProjects}
                         InputProps={{
@@ -106,7 +105,6 @@ const UserCard = ({
                                 multiline={true}
                                 minRows="7"
                                 maxRows="7"
-                                sx={{ width: '100%' }}
                                 defaultValue={userInfo.aboutMe}
                                 InputProps={{
                                     readOnly: true,

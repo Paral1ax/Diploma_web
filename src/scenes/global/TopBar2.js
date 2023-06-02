@@ -23,6 +23,7 @@ import DarkModeOutlinedIcon from "@mui/icons-material/DarkModeOutlined";
 import { UserAuth } from '../../components/Context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { Divider } from '@mui/material';
+import SolanaWalletButton from '../../components/solanaWalletButton';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -81,6 +82,10 @@ export default function PrimarySearchAppBar() {
     } catch (e) {
       console.log(e.message);
     }
+  }
+
+  const handleMyProjectsClick = () => {
+    navigate('/authed/my_projects')
   }
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -142,7 +147,7 @@ export default function PrimarySearchAppBar() {
       <MenuItem onClick={handleClose}>
         Profile
       </MenuItem>
-      <MenuItem onClick={handleClose}>
+      <MenuItem onClick={handleMyProjectsClick}>
         My projects
       </MenuItem>
       <Divider />
@@ -172,6 +177,9 @@ export default function PrimarySearchAppBar() {
       open={isMobileMenuOpen}
       onClose={handleMobileMenuClose}
     >
+      <MenuItem>
+        <SolanaWalletButton/>
+      </MenuItem>
       <MenuItem>
         <IconButton size="large" aria-label="show 4 new mails" color="inherit">
           <Badge badgeContent={4} color="error">
@@ -231,6 +239,7 @@ export default function PrimarySearchAppBar() {
           </Search>
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+            <SolanaWalletButton/>
             <IconButton onClick={colorMode.toggleColorMode} sx={{ color: colors.white_black[400] }} size="large" aria-label="themeButton" color="inherit">
               {theme.palette.mode === "dark" ? (
                 <DarkModeOutlinedIcon />

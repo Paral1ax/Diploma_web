@@ -107,9 +107,7 @@ export default function MiniDrawer() {
     const { getUserById, userData } = UserAuth()
 
     useEffect(() => {
-        return () => {
-            getUserById()
-        }
+        
     }, [])
 
     const [selectedIndex, setSelectedIndex] = React.useState(0);
@@ -304,7 +302,7 @@ export default function MiniDrawer() {
                     </ListItem>
                 </List>
             </Drawer>
-            <Box component="main" width="100%">
+            <Box height="100%" component="main" width={1} sx={{ overflowX: 'hidden'}} >
                 <DrawerHeader />
                 <Outlet />
             </Box>

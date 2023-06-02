@@ -7,9 +7,10 @@ import { mockDataProjects } from "../../../data/mockProject";
 import { useTheme } from "@mui/material";
 import { tokens } from "../../../theme";
 import TabPanel from '../../TabPanel';
-import MyProjectCard from "./Card"
+import MyProjectCard from "./MyOrders"
 import Applications from "./Application";
 import { mockApplication } from "../../../data/mockApplication";
+import MyPerfomanceCard from "./MyPerfomances";
 
 
 function a11yProps(index) {
@@ -30,6 +31,7 @@ export default function MyProjectsTabs() {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
 
+
     return (
         <Box>
             <Tabs value={value} onChange={handleChange} aria-label="basic tabs example" textColor="secondary" centered indicatorColor="secondary">
@@ -39,18 +41,18 @@ export default function MyProjectsTabs() {
             </Tabs>
             <Box>
                 <TabPanel value={value} index={0} >
-                    <MyProjectCard projectsInfo={mockDataProjects}>
+                    <MyProjectCard>
 
                     </MyProjectCard>
                 </TabPanel>
                 <TabPanel value={value} index={1}>
-                    <MyProjectCard projectsInfo={mockDataProjects}>
+                    <MyPerfomanceCard>
 
-                    </MyProjectCard>
+                    </MyPerfomanceCard>
                 </TabPanel>
 
                 <TabPanel value={value} index={2}>
-                    <Applications applicationInfo={mockApplication}>
+                    <Applications>
 
                     </Applications>
                 </TabPanel>

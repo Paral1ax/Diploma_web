@@ -22,7 +22,6 @@ const TextfieldWrapper = ({
     };
 
     if (mata && mata.touched && mata.error) {
-        console.log("текущее значение =" +field.value)
         config.error = true;
         config.helperText = mata.error;
     }

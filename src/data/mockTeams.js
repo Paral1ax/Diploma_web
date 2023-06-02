@@ -5,10 +5,16 @@ export const mockDataTeams = [
         wallet: '488723783283849239887fssesvrdv',
         members: [
             {
-                memberid: 1
+                id: 1,
+                name: 'John',
+                lastName: 'John2',
+                memberEmail: "ma@m.com"
             },
             {
-                memberid: 2
+                id: 2,
+                name: 'John',
+                lastName: 'John2',
+                memberEmail: "lala@ma.com"
             }
         ]
     },
@@ -18,10 +24,16 @@ export const mockDataTeams = [
         wallet: '488723783283849239887fssesvrdv',
         members: [
             {
-                memberid: 1
+                id: 1,
+                name: 'JAnna',
+                lastName: 'John2',
+                memberEmail: "ma@m.com"
             },
             {
-                memberid: 2
+                id: 2,
+                name: 'John',
+                lastName: 'John2',
+                memberEmail: "lala@ma.com"
             }
         ]
     }

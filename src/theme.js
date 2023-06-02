@@ -66,6 +66,9 @@ export const tokens = (mode) => ({
         primary2: {
           400: "#0f141f"
         },
+        primary3: {
+          400: "#181c1f"
+        },
         white_black: {
           400: "#ffffff"
         },
@@ -134,7 +137,10 @@ export const tokens = (mode) => ({
         },
         primary2: {
           400: "#dbdbdb"
-        }
+        },
+        primary3: {
+          400: "#c2c2c2"
+        },
       }),
 });
 

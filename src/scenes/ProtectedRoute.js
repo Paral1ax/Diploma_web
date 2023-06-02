@@ -5,13 +5,12 @@ import { UserAuth } from '../components/Context/AuthContext'
 
 const ProtectedRoute = ({children}) => {
 
-    const { user } = UserAuth()
-
-    if (!auth.currentUser) {
+    const { user, setLoading } = UserAuth()
+    if (!user) {
         console.log("Unauthorized access")
         return <Navigate to='/'/>
     } else {
-        console.log('Authorized successful ' + user)
+        console.log('Мы всегда тут ' + user)
     }
     return children
 }

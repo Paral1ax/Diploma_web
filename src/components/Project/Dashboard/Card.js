@@ -68,10 +68,10 @@ const DashboardCard = ({
           key={item.projectId}
           sx={{
             marginRight: '20px',
-            maxWidth: 400,
+            minWidth: 400,
             borderRadius: '16px',
             borderColor: colors.redAccent[200],
-            border: '1px solid black'
+            border: '1px solid black',
           }}>
           <CardHeader
             avatar={

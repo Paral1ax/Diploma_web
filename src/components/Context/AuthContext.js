@@ -5,11 +5,11 @@ import {
     signOut,
     onAuthStateChanged,
     setPersistence,
-    browserSessionPersistence
+    browserSessionPersistence,
 } from 'firebase/auth'
 import { auth } from '../firebaseConfig'
 import { db } from "../firebaseConfig";
-import { query, collection,onSnapshot, where, getDocs, doc, getDoc } from "firebase/firestore";
+import { query, collection, onSnapshot, where, getDocs, doc, getDoc, getDocFromCache } from "firebase/firestore";
 import { Dashboard } from "@mui/icons-material";
 import LoadingScreen from "../../scenes/loadingScreen";
 import AuthForm from "../../scenes/auth";
@@ -20,9 +20,9 @@ const UserContext = createContext()
 export const AuthContextProvider = ({
     children
 }) => {
- 
+
     const [user, setUser] = useState({})
-    
+
     const createUser = (email, password) => {
         return createUserWithEmailAndPassword(auth, email, password)
     }
@@ -37,33 +37,33 @@ export const AuthContextProvider = ({
         return signOut(auth)
     }
     const [userData, setUserData] = useState({})
-
-    const getUserById = async () => {
-        try {
-            console.log("sidebar curid = " + user.uid)
-            const userRef = doc(db, 'users', user.uid)
-            const userSnap = await getDoc(userRef)
-            if (userSnap.exists()) {
-                setUserData(userSnap.data())
-                console.log("функция работает")
-            }
-            else console.log("User not found")
-        } catch (e) {
-            console.log(e.message)
-        }
-    }
-
     const [loading, setLoading] = useState(true);
     const [authState, setAuthState] = useState(null);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-            setLoading(true)
+            let userInfo = {}
+            console.log("Проверка пользователя")
             if (currentUser) {
-                setAuthState(true)
+                console.log("Проверка завершена успешно")
                 setUser(currentUser)
-                setLoading(false)
+                const userRef = doc(db, 'users', currentUser.uid)
+                getDoc(userRef).then((userSnap) => {
+                    if (userSnap.exists()) {
+                        userInfo = userSnap.data()
+                        console.log("функция работает")
+                    } else console.log("User not found")
+
+                }).then(() => {
+
+                    setUserData(userInfo)
+
+                    setAuthState(true)
+                    setLoading(false)
+                    console.log("UserInfo = " + userInfo)
+                })
             } else {
+                console.log("Пользователь не авторизован")
                 setAuthState(false)
                 setLoading(false)
             }
@@ -73,8 +73,8 @@ export const AuthContextProvider = ({
         };
     }, [])
     return (
-        <UserContext.Provider value={{ createUser, signIn, user, logout, getUserById, userData}}>
-            {loading ? (<LoadingScreen />): {authState} ? (children) : (<AuthForm/>)}
+        <UserContext.Provider value={{ createUser, signIn, user, logout, userData, loading, setLoading }}>
+            {loading ? (<LoadingScreen />) : { authState } ? (children) : (<AuthForm />)}
         </UserContext.Provider>
     )
 }

@@ -22,7 +22,7 @@ import TextfieldWrapper from '../Dashboard/Textfield';
 import InputAdornment from '@mui/material/InputAdornment';
 import PeopleIcon from '@mui/icons-material/People';
 import CallMadeIcon from '@mui/icons-material/CallMade';
-
+import { useNavigate } from 'react-router-dom';
 
 const ProjectCard = ({
     newProjects,
@@ -34,13 +34,14 @@ const ProjectCard = ({
     const colors = tokens(theme.palette.mode);
 
     const [expanded, setExpanded] = React.useState(-1);
+    const navigate = useNavigate()
 
     const handleExpandClick = (i) => {
         setExpanded(expanded === i ? -1 : i);
     };
 
-    const handleShowProject = (i) => {
-
+    const handleViewProject = (id) => {
+        navigate('/authed/projects/' + id)
     }
     const displayTime = (time) => {
         return (new Date(time * 1000).toLocaleDateString())
@@ -120,7 +121,7 @@ const ProjectCard = ({
                                         <Button
                                             color='third'
                                             variant='contained'
-                                            onClick={handleShowProject}
+                                            onClick={() => handleViewProject(item.projectId)}
                                             endIcon={<CallMadeIcon style={{ color: colors.black_white[400] }} />}
                                             sx={{ borderRadius: '10px' }}
                                         >
